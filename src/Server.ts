@@ -8,7 +8,8 @@ import WebSocketEndpoint from './WebSocketEndpoint';
  *  An instance of this class will be instantiate in the app/client code and will
  *  be configured for various purposes.
  *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
-*/
+ *  @critic     Tamara Bazko <tamara.bazko@gmail.com>
+ */
 export default class Server {
 
     private _server:FastifyInstance = Fastify({ logger: true });
@@ -28,14 +29,14 @@ export default class Server {
     /**
      *  Get list of registered extensions.
      */
-    get extensions() : Array<string> { return []; }
+    get extensions() : Array<Extension> { return []; }
 
     /**
      *  Register an extension inside this server.
      */
     public registerExtension(extension:Extension) : this {
 
-        // construct the extension id
+        // construct the extension id // @todo this needs to be a defined format/type
         const id = `${extension.name}::${extension.version}`;
 
         if (this._extensions.has(id)) return this;
