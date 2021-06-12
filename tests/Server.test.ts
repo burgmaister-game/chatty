@@ -2,12 +2,34 @@ import Server from '../src/Server';
 
 describe('Server', () => {
 
-    it('.constructor()', done => {
+    describe('.constructor()', () => {
 
-        const server = new Server();
+        it('.constructor()', done => {
 
-        expect(server).toBeInstanceOf(Server);
+            const server = new Server();
+    
+            expect(server).toBeInstanceOf(Server);
+    
+            server.stop().then(done);
+        });
+    })
+    
+    describe('.registerExtension()', () => {
 
-        server.stop().then(done);
+        it('should register an extension inside the server', done => {
+
+            const server = new Server();
+
+            expect(server.extensions).toHaveLength(0);
+
+            server.registerExtension({
+                name: 'test',
+                version: 1
+            });
+
+            expect(server.extensions).toHaveLength(1);
+
+            server.stop().then(done);
+        });
     });
 });

@@ -38,7 +38,7 @@ export default class Server {
     /**
      *  Get list of registered extensions.
      */
-    get extensions() : Array<Extension> { return []; }
+    get extensions() : Array<Extension> { return [...this._extensions.values()]; }
 
     /**
      *  Register an extension inside this server.
@@ -66,7 +66,12 @@ export default class Server {
         // When close is called without params it returns a promise and fastify
         // declares a Fastify and Promise union type. This should work, but
         // apparently the union is missing methods.
-        return this._server.close().then() as Promise<undefined>;
+        return this._server.close().then(() => {
+
+            // this will make sure that the 
+            this._server.server.unref();
+
+        }) as Promise<undefined>;
     }
 
     /**
