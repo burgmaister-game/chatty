@@ -32,7 +32,15 @@ export default class Server {
         this._server.register(FastifyWebSocket);
 
         // @todo make it configurable
-        this._server.listen(8000);
+        this._server.listen(8000).then().catch(() => {
+
+            this._server.log.error("Can't start a server on port 8000");
+
+            // @todo handle this properly cause now the information that the server
+            // can't start is swallowed by logs. In reality we should make sure that the
+            // process with a non-zero response. Otherwise, it will be a PITA to run
+            // this inside a docker container or kubernetes.
+        });
     }
 
     /**
@@ -58,7 +66,7 @@ export default class Server {
     }
 
     /**
-     *  Stop the server.
+     *  Stop the server. The promise resolves when the server is entirely stopped.
      */
     public stop() : Promise<undefined> {
 
@@ -68,33 +76,30 @@ export default class Server {
         // apparently the union is missing methods.
         return this._server.close().then(() => {
 
-            // this will make sure that the 
+            // this will make sure that the node server really stops
             this._server.server.unref();
 
         }) as Promise<undefined>;
     }
 
     /**
-     *  Register a rest endpoint.
+     *  Register a REST endpoint.
      */
     private registerRest(endpoint:RestEndpoint) : void {
 
         this._server.route({
-            // @todo should we have our equivalent type? instead of trusting our code and
-            // treating it as a Fastify HTTPMethod?
-            method:     endpoint.method as HTTPMethods,
+            method:     endpoint.method,
             url:        endpoint.path,
             handler:    (request:FastifyRequest, reply:FastifyReply) => {
 
                 const result = endpoint.handle(new FastifyHttpRequest(request));
 
                 // send the payload of the result
+                // @todo is this correct?
                 reply.send(result.payload);
             }
         })
-
-        // @todo
-    }
+  }
 
     private registerWebSocket(endpoint:WebSocketEndpoint) : void {
 

@@ -1,12 +1,10 @@
-import { FastifyRequest, HTTPMethods } from "fastify";
+import { FastifyRequest } from "fastify";
+import { HttpMethod } from './HttpMethod';
 
 
 export interface QueryStringObject {
     [ key: string ] : string|undefined;
 };
-
-export type HTTPMethod = HTTPMethods;
-
 export default interface HttpRequest {
 
     /**
@@ -16,7 +14,9 @@ export default interface HttpRequest {
      */
     original: FastifyRequest;
 
+    /**
+     *  The regular properties of a Http request.
+     */
     queryString: QueryStringObject;
-
-    method:HTTPMethod;
+    method:HttpMethod;
 };

@@ -1,5 +1,6 @@
 import { FastifyRequest } from "fastify";
-import HttpRequest, { HTTPMethod, QueryStringObject } from './HttpRequest';
+import HttpRequest, { QueryStringObject } from './HttpRequest';
+import { HttpMethod } from './HttpMethod';
 /**
  *  This is a class wrapping around a fastify request inside our (smaller)
  *  interface. This way we can make the library smaller and minimize 
@@ -16,7 +17,7 @@ export default class FastifyHttpRequest implements HttpRequest {
     
     // @todo implement me
     get queryString(): QueryStringObject { return { }; }
-    get method() : HTTPMethod { return 'GET'; }
+    get method() : HttpMethod { return 'GET'; }
 
     /**
      *  Get access to the origianl FastifyRequest object. Interacting with

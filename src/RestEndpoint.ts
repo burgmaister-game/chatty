@@ -1,5 +1,6 @@
 import HttpRequest from "./HttpRequest";
 import RestResult from "./RestResult";
+import { HttpMethod } from "./HttpMethod";
 /**
  *  This is a base class for all REST endpoints. An endpoint invokes
  *  when the server recognizes a specific path on a specific method.
@@ -8,10 +9,10 @@ import RestResult from "./RestResult";
  */
 export default abstract class RestEndpoint {
 
-    private _method:string;
+    private _method:HttpMethod;
     private _path:string;
 
-    constructor(method:string, path:string) {
+    constructor(method:HttpMethod, path:string) {
 
         this._method = method;
         this._path = path;
@@ -20,7 +21,7 @@ export default abstract class RestEndpoint {
     /**
      *  Public accessors to properties.
      */
-    get method() : string { return this._method; }
+    get method() : HttpMethod { return this._method; }
     get path() : string { return this._path; }
 
     /**
