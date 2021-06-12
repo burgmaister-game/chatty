@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { default as FastifyWebSocket } from 'fastify-websocket'
 import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
@@ -52,6 +52,21 @@ export default class Server {
      *  Register a rest endpoint.
      */
     private registerRest(endpoint:RestEndpoint) : void {
+
+        this._server.route({
+            // @todo should we have our equivalent type? instead of trusting our code and
+            // treating it as a Fastify HTTPMethod?
+            method:     endpoint.method as HTTPMethods,
+            url:        endpoint.path,
+            handler:    (request:FastifyRequest, reply:FastifyReply) => {
+
+                // @todo pass params somehow
+                const result = endpoint.handle({ });
+
+                // send the payload of the result
+                reply.send(result.payload);
+            }
+        })
 
         // @todo
     }
