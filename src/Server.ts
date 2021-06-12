@@ -3,20 +3,29 @@ import { default as FastifyWebSocket } from 'fastify-websocket'
 import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
+import FastifyHttpRequest from './FastifyHttpRequest';
 /**
  *  This is a class responsible for creating a chatty server (get it? it's chatty :).
  *  An instance of this class will be instantiate in the app/client code and will
  *  be configured for various purposes.
+ * 
+ *  @todo   add a way to inject a logger
+ *  @todo   add a way to inject a http server (cause maybe someone wants to reuse
+ *          an existing one)
+ *  @todo   add a way to configure port on which the server listens
+ * 
  *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  *  @critic     Tamara Bazko <tamara.bazko@gmail.com>
  */
 export default class Server {
 
-    private _server:FastifyInstance = Fastify({ logger: true });
+    private readonly _server:FastifyInstance;
 
-    private _extensions:Map<string, Extension> = new Map();
+    private readonly _extensions:Map<string, Extension> = new Map();
 
-    constructor() {
+    constructor(logger:boolean = false) {
+
+        this._server = Fastify({ logger });
 
         // make sure we have the websocket plugin registered. Otherwise w can't do any websocket
         // stuff with fastify and typescript doesn't want to work correnctly with it.
@@ -49,6 +58,18 @@ export default class Server {
     }
 
     /**
+     *  Stop the server.
+     */
+    public stop() : Promise<undefined> {
+
+        // so, TS is getting confused with union types that fastify returns.
+        // When close is called without params it returns a promise and fastify
+        // declares a Fastify and Promise union type. This should work, but
+        // apparently the union is missing methods.
+        return this._server.close().then() as Promise<undefined>;
+    }
+
+    /**
      *  Register a rest endpoint.
      */
     private registerRest(endpoint:RestEndpoint) : void {
@@ -60,8 +81,7 @@ export default class Server {
             url:        endpoint.path,
             handler:    (request:FastifyRequest, reply:FastifyReply) => {
 
-                // @todo pass params somehow
-                const result = endpoint.handle({ });
+                const result = endpoint.handle(new FastifyHttpRequest(request));
 
                 // send the payload of the result
                 reply.send(result.payload);
