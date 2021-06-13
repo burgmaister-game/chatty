@@ -4,21 +4,21 @@ describe('Server', () => {
 
     describe('.constructor()', () => {
 
-        it('.constructor()', done => {
+        it('.constructor()', async () => {
 
-            const server = new Server();
-    
+            const server = new Server({ port: 8001 });
+
             expect(server).toBeInstanceOf(Server);
-    
-            server.stop().then(done);
+
+            await server.stop();
         });
     })
     
     describe('.registerExtension()', () => {
 
-        it('should register an extension inside the server', done => {
+        it('should register an extension inside the server', async () => {
 
-            const server = new Server();
+            const server = new Server({ port: 8002 })
 
             expect(server.extensions).toHaveLength(0);
 
@@ -29,7 +29,15 @@ describe('Server', () => {
 
             expect(server.extensions).toHaveLength(1);
 
-            server.stop().then(done);
+            await server.stop();
+        });
+    });
+
+    describe('.stop()', () => {
+
+        it('should stop the server', () => {
+
+
         });
     });
 });

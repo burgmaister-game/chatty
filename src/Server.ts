@@ -4,6 +4,7 @@ import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
 import FastifyHttpRequest from './FastifyHttpRequest';
+import { resolve } from 'path/posix';
 /**
  *  This is a class responsible for creating a chatty server (get it? it's chatty :).
  *  An instance of this class will be instantiate in the app/client code and will
@@ -19,22 +20,27 @@ import FastifyHttpRequest from './FastifyHttpRequest';
  */
 export default class Server {
 
-    private readonly _server:FastifyInstance;
+    private _server:FastifyInstance | null = null;
 
     private readonly _extensions:Map<string, Extension> = new Map();
 
-    constructor(logger:boolean = false) {
+    constructor(props:ServerProps) {
 
-        this._server = Fastify({ logger });
+        this._server = Fastify({
+            logger: props.logger || true,
+            return503OnClosing: false
+        });
 
         // make sure we have the websocket plugin registered. Otherwise w can't do any websocket
         // stuff with fastify and typescript doesn't want to work correnctly with it.
         this._server.register(FastifyWebSocket);
 
         // @todo make it configurable
-        this._server.listen(8000).then().catch(() => {
+        this._server.listen(props.port || 80).then().catch(() => {
 
-            this._server.log.error("Can't start a server on port 8000");
+            if (!this._server) return;
+
+            this._server.log.error(`Can't start a server on port ${props.port || 80}`);
 
             // @todo handle this properly cause now the information that the server
             // can't start is swallowed by logs. In reality we should make sure that the
@@ -68,24 +74,22 @@ export default class Server {
     /**
      *  Stop the server. The promise resolves when the server is entirely stopped.
      */
-    public stop() : Promise<undefined> {
+    public stop() : PromiseLike<void> {
 
-        // so, TS is getting confused with union types that fastify returns.
-        // When close is called without params it returns a promise and fastify
-        // declares a Fastify and Promise union type. This should work, but
-        // apparently the union is missing methods.
+        if (!this._server) return Promise.resolve();
+
         return this._server.close().then(() => {
 
-            // this will make sure that the node server really stops
-            this._server.server.unref();
-
-        }) as Promise<undefined>;
+            this._server = null;
+        });
     }
 
     /**
      *  Register a REST endpoint.
      */
     private registerRest(endpoint:RestEndpoint) : void {
+
+        if (!this._server) return;
 
         this._server.route({
             method:     endpoint.method,
@@ -105,4 +109,9 @@ export default class Server {
 
         // @todo
     }
+};
+
+export interface ServerProps {
+    port?:number,
+    logger?:boolean
 };
