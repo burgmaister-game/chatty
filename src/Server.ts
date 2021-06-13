@@ -35,8 +35,9 @@ export default class Server {
         // stuff with fastify and typescript doesn't want to work correnctly with it.
         this._server.register(FastifyWebSocket);
 
-        // @todo make it configurable
-        this._server.listen(props.port || 80).then().catch(() => {
+        // @todo maybe we should make it a method and make sure that caller code can react
+        // when we know that something can go wrong.
+        this._server.listen(props.port || 80).catch(() => {
 
             if (!this._server) return;
 
@@ -48,6 +49,12 @@ export default class Server {
             // this inside a docker container or kubernetes.
         });
     }
+
+    /**
+     *  Get access to fastify instance. You shouldn't really use it without
+     *  a good reason but it might be useful to get access to it.
+     */
+    public get server() : FastifyInstance|null { return this._server; }
 
     /**
      *  Get list of registered extensions.

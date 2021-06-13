@@ -12,7 +12,7 @@ export default abstract class RestEndpoint {
     private _method:HttpMethod;
     private _path:string;
 
-    constructor(method:HttpMethod, path:string) {
+    public constructor(method:HttpMethod, path:string) {
 
         this._method = method;
         this._path = path;
@@ -21,8 +21,8 @@ export default abstract class RestEndpoint {
     /**
      *  Public accessors to properties.
      */
-    get method() : HttpMethod { return this._method; }
-    get path() : string { return this._path; }
+    public get method() : HttpMethod { return this._method; }
+    public get path() : string { return this._path; }
 
     /**
      *  This is a method thant needs the be implemented in the child class to provide
@@ -30,5 +30,5 @@ export default abstract class RestEndpoint {
      *  instance with information about the content of the respose that needs to be
      *  send to the client.
      */
-    abstract handle(request:HttpRequest) : RestResult;
+    public abstract handle(request:HttpRequest) : RestResult;
 };
