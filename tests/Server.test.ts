@@ -7,7 +7,7 @@ describe('Server', () => {
 
     describe('.constructor()', () => {
 
-        it('.constructor()', async () => {
+        it('should construct a server', async () => {
 
             const server = new Server({ port: 8001 });
 
