@@ -1,10 +1,9 @@
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
+import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { default as FastifyWebSocket } from 'fastify-websocket'
 import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
 import FastifyHttpRequest from './FastifyHttpRequest';
-import { resolve } from 'path/posix';
 /**
  *  This is a class responsible for creating a chatty server (get it? it's chatty :).
  *  An instance of this class will be instantiate in the app/client code and will
@@ -14,9 +13,6 @@ import { resolve } from 'path/posix';
  *  @todo   add a way to inject a http server (cause maybe someone wants to reuse
  *          an existing one)
  *  @todo   add a way to configure port on which the server listens
- * 
- *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
- *  @critic     Tamara Bazko <tamara.bazko@gmail.com>
  */
 export default class Server {
 
@@ -105,7 +101,6 @@ export default class Server {
 
                 const result = endpoint.handle(new FastifyHttpRequest(request));
 
-                // send the payload of the result
                 // @todo is this correct?
                 reply.send(result.payload);
             }
