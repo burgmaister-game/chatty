@@ -4,8 +4,6 @@ import { HttpMethod } from "./HttpMethod";
 /**
  *  This is a base class for all REST endpoints. An endpoint invokes
  *  when the server recognizes a specific path on a specific method.
- * 
- *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
 export default abstract class RestEndpoint {
 
