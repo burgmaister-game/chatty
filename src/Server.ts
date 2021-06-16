@@ -1,5 +1,5 @@
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { default as FastifyWebSocket } from 'fastify-websocket'
+import { default as FastifyWebSocket, SocketStream } from 'fastify-websocket'
 import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
@@ -107,7 +107,17 @@ export default class Server {
 
     private registerWebSocket(endpoint:WebSocketEndpoint) : void {
 
-        // @todo
+        if (!this._server) return;
+
+        this._server.route({
+            method:     endpoint.method,
+            url:        endpoint.path,
+            handler:    () => { },
+            wsHandler:  (rawConnection:SocketStream, request:FastifyRequest) => {
+
+                endpoint.handle(rawConnection, { });
+            }
+        });
     }
 };
 
