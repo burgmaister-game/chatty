@@ -4,6 +4,7 @@ import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
 import FastifyHttpRequest from './FastifyHttpRequest';
+import { resolve } from 'path/posix';
 /**
  *  This is a class responsible for creating a chatty server (get it? it's chatty :).
  *  An instance of this class will be instantiate in the app/client code and will
@@ -72,6 +73,18 @@ export default class Server {
         if (extension.wsEndpoints) for (let endpoint of extension.wsEndpoints) this.registerWebSocket(endpoint);
 
         return this;
+    }
+
+    /**
+     *  Make the server listen to a specific port.
+     */
+    public listen(port:number) : PromiseLike<void> {
+
+        return new Promise((resolve, reject) => {
+
+            if (!this._server) reject();
+            else this._server?.listen(port).then(() => void resolve(), () => void reject());
+        });
     }
 
     /**
