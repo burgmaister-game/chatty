@@ -9,7 +9,7 @@ describe('Server', () => {
 
         it('should construct a server', async () => {
 
-            const server = new Server({ port: 8001 });
+            const server = new Server();
 
             expect(server).toBeInstanceOf(Server);
 
@@ -21,7 +21,7 @@ describe('Server', () => {
 
         it('should register an extension inside the server', async () => {
 
-            const server = new Server({ port: 8002 })
+            const server = new Server()
 
             expect(server.extensions).toHaveLength(0);
 
@@ -37,7 +37,7 @@ describe('Server', () => {
 
         it('should registr rest endpoints', async () => {
 
-            const server = new Server({ port: 8003 });
+            const server = new Server();
 
             server.registerExtension({
                 name: 'test',
@@ -65,11 +65,6 @@ describe('Server', () => {
         });
     });
 
-    describe('.stop()', () => {
-
-        it('should stop the server', () => {
-
-
-        });
-    });
+    // @note we don't test .listen() and .stop() cause testing these methods cause the whole jest
+    // process to hang.
 });

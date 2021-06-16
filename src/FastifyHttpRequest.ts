@@ -16,7 +16,7 @@ export default class FastifyHttpRequest implements HttpRequest {
     }
     
     // @todo implement me
-    get queryString(): QueryStringObject { return { }; }
+    get queryString(): QueryStringObject { return Object.assign({ }, this._original.query); }
     get method() : HttpMethod { return 'GET'; }
 
     /**
