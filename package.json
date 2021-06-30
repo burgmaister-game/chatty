@@ -1,6 +1,6 @@
 {
   "name": "chatty",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,7 +8,8 @@
     "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage",
     "build": "tsc --build . ",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
