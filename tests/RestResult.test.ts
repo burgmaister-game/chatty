@@ -10,6 +10,15 @@ describe('RestResult', () => {
         });
     });
 
+    describe('.code', () => {
+
+        it('should assign the passed number', () => {
+
+            expect(new RestResult(200).code).toEqual(200);
+            expect(new RestResult(303).code).toEqual(303);
+        });
+    });
+
     describe('.payload', () => {
 
         it('should be populated with constructor data', () => {
