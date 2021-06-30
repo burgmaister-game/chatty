@@ -6,7 +6,7 @@ describe('RestResult', () => {
 
         it('should create a result', () => {
 
-            expect(new RestResult()).toBeInstanceOf(RestResult);
+            expect(new RestResult(200)).toBeInstanceOf(RestResult);
         });
     });
 
@@ -14,7 +14,7 @@ describe('RestResult', () => {
 
         it('should be populated with constructor data', () => {
 
-            expect(new RestResult('test').payload).toEqual('test');
+            expect(new RestResult(200, 'test').payload).toEqual('test');
         });
     });
 
@@ -22,7 +22,7 @@ describe('RestResult', () => {
 
         it('should respond with json content type by default', () => {
 
-            expect(new RestResult().contentType).toEqual('application/json');
+            expect(new RestResult(200).contentType).toEqual('application/json');
         });
     });
 });

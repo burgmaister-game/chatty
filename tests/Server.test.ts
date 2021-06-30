@@ -48,7 +48,7 @@ describe('Server', () => {
                         constructor() { super('GET', '/test'); }
 
                         handle(request:HttpRequest) : RestResult {
-                            return new RestResult("OK");
+                            return new RestResult(200, "OK");
                         }
                     }
                 ]
