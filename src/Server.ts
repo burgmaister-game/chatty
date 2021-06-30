@@ -1,10 +1,9 @@
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { default as FastifyWebSocket } from 'fastify-websocket'
+import { default as FastifyWebSocket, SocketStream } from 'fastify-websocket'
 import Extension from "./Extension";
 import RestEndpoint from './RestEndpoint';
 import WebSocketEndpoint from './WebSocketEndpoint';
 import FastifyHttpRequest from './FastifyHttpRequest';
-import { resolve } from 'path/posix';
 /**
  *  This is a class responsible for creating a chatty server (get it? it's chatty :).
  *  An instance of this class will be instantiate in the app/client code and will
@@ -21,30 +20,16 @@ export default class Server {
 
     private readonly _extensions:Map<string, Extension> = new Map();
 
-    constructor(props:ServerProps) {
+    constructor(props:ServerProps = { }) {
 
         this._server = Fastify({
-            logger: props.logger || true,
+            logger: props.logger || false,
             return503OnClosing: false
         });
 
         // make sure we have the websocket plugin registered. Otherwise w can't do any websocket
         // stuff with fastify and typescript doesn't want to work correnctly with it.
         this._server.register(FastifyWebSocket);
-
-        // @todo maybe we should make it a method and make sure that caller code can react
-        // when we know that something can go wrong.
-        this._server.listen(props.port || 80).catch(() => {
-
-            if (!this._server) return;
-
-            this._server.log.error(`Can't start a server on port ${props.port || 80}`);
-
-            // @todo handle this properly cause now the information that the server
-            // can't start is swallowed by logs. In reality we should make sure that the
-            // process with a non-zero response. Otherwise, it will be a PITA to run
-            // this inside a docker container or kubernetes.
-        });
     }
 
     /**
@@ -122,11 +107,20 @@ export default class Server {
 
     private registerWebSocket(endpoint:WebSocketEndpoint) : void {
 
-        // @todo
+        if (!this._server) return;
+
+        this._server.route({
+            method:     endpoint.method,
+            url:        endpoint.path,
+            handler:    () => { },
+            wsHandler:  (rawConnection:SocketStream, request:FastifyRequest) => {
+
+                endpoint.handle(rawConnection, { });
+            }
+        });
     }
 };
 
 export interface ServerProps {
-    port?:number,
     logger?:boolean
 };
