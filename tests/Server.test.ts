@@ -35,7 +35,7 @@ describe('Server', () => {
             await server.stop();
         });
 
-        it('should registr rest endpoints', async () => {
+        it('should register rest endpoints', async () => {
 
             const server = new Server();
 
@@ -59,9 +59,38 @@ describe('Server', () => {
                 url: "/test"
             });
 
+            expect(response?.statusCode).toEqual(200);
             expect(response?.body).toEqual("OK");
 
             // await server.stop();
+        });
+
+        it('should make sure the response code from endpoint is passed', async () => {
+
+            const server = new Server();
+
+            server.registerExtension({
+                name: 'test',
+                version: 1,
+                restEndpoints: [
+                    new class extends RestEndpoint {
+
+                        constructor() { super('GET', '/test'); }
+
+                        handle(request:HttpRequest) : RestResult {
+                            return new RestResult(400, "Bad");
+                        }
+                    }
+                ]
+            });
+
+            const response = await server.server?.inject({
+                method: "GET",
+                url: "/test"
+            });
+
+            expect(response?.statusCode).toEqual(400);
+            expect(response?.body).toEqual("Bad");
         });
     });
 

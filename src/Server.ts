@@ -99,7 +99,7 @@ export default class Server {
 
                 const result = endpoint.handle(new FastifyHttpRequest(request));
 
-                // @todo is this correct?
+                reply.statusCode = result.code;
                 reply.send(result.payload);
             }
         })
